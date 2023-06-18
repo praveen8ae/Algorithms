@@ -1,0 +1,59 @@
+(defun get-number-of-1-bits (bits)
+  "Returns the number of 1-valued bits in the integer-encoded BITS."
+  (declare (type (integer 0 *) bits))
+  (the (integer 0 *) (logcount bits)))
+
+(defun get-even-parity-bit (bits)
+  "Returns the even parity bit of the integer-encoded BITS."
+  (declare (type (integer 0 *) bits))
+  (the bit (mod (get-number-of-1-bits bits) 2)))
+
+(defun get-least-significant-bit (bits)
+  "Returns the least significant bit of the integer-encoded BITS."
+  (declare (type (integer 0 *) bits))
+  (the bit (ldb (byte 1 0) bits)))
+
+(defun make-blum-blum-shub (&key (p 11) (q 23) (s 3))
+  "Returns a function of no arguments which represents a simple
+   Blum-Blum-Shub pseudorandom number generator, configured to use the
+   generator parameters P, Q, and S (seed), and returning three values:
+   (1) the number x[n+1],
+   (2) the even parity bit of the number,
+   (3) the least significant bit of the number.
+   ---
+   Please note that the parameters P, Q, and S are not checked in
+   accordance to the conditions described in the article."
+  (declare (type (integer 0 *) p q s))
+  (let ((M    (* p q))       ;; M  = p * q
+        (x[n] s))            ;; x0 = seed
+    (declare (type (integer 0 *) M x[n]))
+    #'(lambda ()
+        ;; x[n+1] = x[n]^2 mod M
+        (let ((x[n+1] (mod (* x[n] x[n]) M)))
+          (declare (type (integer 0 *) x[n+1]))
+          ;; Compute the random bit(s) based on x[n+1].
+          (let ((even-parity-bit       (get-even-parity-bit       x[n+1]))
+                (least-significant-bit (get-least-significant-bit x[n+1])))
+            (declare (type bit even-parity-bit))
+            (declare (type bit least-significant-bit))
+            ;; Update the state such that x[n+1] becomes the new x[n].
+            (setf x[n] x[n+1])
+            (values x[n+1]
+                    even-parity-bit
+                    least-significant-bit))))))
+
+;; Print the exemplary outputs.
+(let ((bbs (make-blum-blum-shub :p 11 :q 23 :s 3)))
+  (declare (type (function () (values (integer 0 *) bit bit)) bbs))
+  (format T "~&Keys: E = even parity, L = least significant")
+  (format T "~2%")
+  (format T "~&x[n+1] | E | L")
+  (format T "~&--------------")
+  (loop repeat 6 do
+    (multiple-value-bind (x[n+1] even-parity-bit least-significant-bit)
+        (funcall bbs)
+      (declare (type (integer 0 *) x[n+1]))
+      (declare (type bit           even-parity-bit))
+      (declare (type bit           least-significant-bit))
+      (format T "~&~6d | ~d | ~d"
+                x[n+1] even-parity-bit least-significant-bit))))
