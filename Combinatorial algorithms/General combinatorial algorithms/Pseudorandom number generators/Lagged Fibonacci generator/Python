@@ -1,0 +1,24 @@
+def lagged_fibonacci_generator(n, k, seed):
+    # Initialize the seed sequence
+    sequence = list(seed)
+    
+    # Generate the initial sequence
+    for i in range(k - len(seed)):
+        next_number = (sequence[i-2] + sequence[i-1]) % n
+        sequence.append(next_number)
+    
+    while True:
+        next_number = (sequence[-k] + sequence[-1]) % n
+        sequence.append(next_number)
+        yield next_number
+
+# Example usage
+n = 100   # Modulus
+k = 3     # Lag parameter
+seed = [0, 1, 2]   # Seed sequence
+
+generator = lagged_fibonacci_generator(n, k, seed)
+
+# Generate the first 10 numbers
+for _ in range(10):
+    print(next(generator))
