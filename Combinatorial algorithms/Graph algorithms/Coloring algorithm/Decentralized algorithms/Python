@@ -1,0 +1,42 @@
+import random
+
+class Node:
+    def __init__(self, node_id):
+        self.node_id = node_id
+        self.neighbors = set()
+        self.rumors = set()
+
+    def add_neighbor(self, neighbor):
+        self.neighbors.add(neighbor)
+
+    def receive_rumor(self, rumor):
+        self.rumors.add(rumor)
+
+    def gossip(self):
+        rumor = random.choice(list(self.rumors))
+        recipient = random.choice(list(self.neighbors))
+        recipient.receive_rumor(rumor)
+
+# Create nodes and establish connections
+nodes = [Node(0), Node(1), Node(2), Node(3)]
+nodes[0].add_neighbor(nodes[1])
+nodes[0].add_neighbor(nodes[2])
+nodes[1].add_neighbor(nodes[0])
+nodes[1].add_neighbor(nodes[3])
+nodes[2].add_neighbor(nodes[0])
+nodes[2].add_neighbor(nodes[3])
+nodes[3].add_neighbor(nodes[1])
+nodes[3].add_neighbor(nodes[2])
+
+# Initialize the rumor at a random node
+initial_node = random.choice(nodes)
+initial_node.receive_rumor("Hello, world!")
+
+# Perform gossiping
+for _ in range(10):
+    node = random.choice(nodes)
+    node.gossip()
+
+# Print the rumors at each node
+for node in nodes:
+    print(f"Node {node.node_id}: {node.rumors}")
