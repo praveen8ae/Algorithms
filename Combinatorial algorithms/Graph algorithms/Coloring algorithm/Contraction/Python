@@ -1,0 +1,40 @@
+class Graph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.adj_list = [[] for _ in range(vertices)]
+
+    def add_edge(self, u, v):
+        self.adj_list[u].append(v)
+        self.adj_list[v].append(u)
+
+    def contract_edge(self, u, v):
+        # Merge vertices u and v
+        self.adj_list[u] += self.adj_list[v]
+        del self.adj_list[v]
+
+        # Update all references to v with u
+        for vertex in range(self.vertices):
+            if vertex != u:
+                self.adj_list[vertex] = [u if x == v else x for x in self.adj_list[vertex]]
+
+    def print_graph(self):
+        for vertex in range(self.vertices):
+            print(f"Adjacent to vertex {vertex}: {self.adj_list[vertex]}")
+
+# Create a graph
+graph = Graph(6)
+graph.add_edge(0, 1)
+graph.add_edge(1, 2)
+graph.add_edge(2, 3)
+graph.add_edge(3, 4)
+graph.add_edge(4, 5)
+graph.add_edge(5, 0)
+
+print("Before edge contraction:")
+graph.print_graph()
+
+# Contract edge between vertices 0 and 1
+graph.contract_edge(0, 1)
+
+print("After edge contraction:")
+graph.print_graph()
