@@ -1,0 +1,33 @@
+class Item:
+    def __init__(self, weight, value):
+        self.weight = weight
+        self.value = value
+
+def knapsack_greedy(items, capacity):
+    items.sort(key=lambda item: item.value / item.weight, reverse=True)  # Sort items by value-to-weight ratio
+    total_value = 0
+    total_weight = 0
+    selected_items = []
+
+    for item in items:
+        if total_weight + item.weight <= capacity:
+            selected_items.append(item)
+            total_value += item.value
+            total_weight += item.weight
+
+    return selected_items, total_value
+
+# Example usage
+items = [
+    Item(10, 60),
+    Item(20, 100),
+    Item(30, 120)
+]
+knapsack_capacity = 50
+
+selected_items, total_value = knapsack_greedy(items, knapsack_capacity)
+
+print("Selected items:")
+for item in selected_items:
+    print(f"Weight: {item.weight}, Value: {item.value}")
+print(f"Total Value: {total_value}")
