@@ -1,0 +1,43 @@
+class Graph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.adj_list = [[] for _ in range(vertices)]
+
+    def add_edge(self, u, v):
+        self.adj_list[u].append(v)
+        self.adj_list[v].append(u)
+
+    def greedy_coloring(self):
+        colors = [-1] * self.vertices  # Initialize color assignments
+
+        # Assign colors to vertices
+        for vertex in range(self.vertices):
+            used_colors = set()
+            for neighbor in self.adj_list[vertex]:
+                if colors[neighbor] != -1:
+                    used_colors.add(colors[neighbor])
+
+            # Find the lowest unused color for the current vertex
+            for color in range(self.vertices):
+                if color not in used_colors:
+                    break
+
+            # Assign the color to the current vertex
+            colors[vertex] = color
+
+        return colors
+
+# Create a graph
+graph = Graph(5)
+graph.add_edge(0, 1)
+graph.add_edge(0, 2)
+graph.add_edge(1, 2)
+graph.add_edge(2, 3)
+graph.add_edge(3, 4)
+
+# Perform greedy coloring
+colors = graph.greedy_coloring()
+
+# Print the assigned colors for each vertex
+for vertex, color in enumerate(colors):
+    print(f"Vertex {vertex} -> Color {color}")
