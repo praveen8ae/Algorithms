@@ -1,0 +1,40 @@
+class Graph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.adj_list = [[] for _ in range(vertices)]
+
+    def add_edge(self, u, v):
+        self.adj_list[u].append(v)
+        self.adj_list[v].append(u)
+
+    def is_bipartite(self, source):
+        colors = [-1] * self.vertices
+        colors[source] = 1
+
+        queue = [source]
+        while queue:
+            vertex = queue.pop(0)
+
+            for neighbor in self.adj_list[vertex]:
+                if colors[neighbor] == -1:
+                    colors[neighbor] = 1 - colors[vertex]
+                    queue.append(neighbor)
+                elif colors[neighbor] == colors[vertex]:
+                    return False
+
+        return True
+
+# Create a bipartite graph
+graph = Graph(4)
+graph.add_edge(0, 1)
+graph.add_edge(1, 2)
+graph.add_edge(2, 3)
+graph.add_edge(3, 0)
+
+# Check if the graph is bipartite
+is_bipartite = graph.is_bipartite(0)
+
+if is_bipartite:
+    print("The graph is bipartite and can be colored with 2 colors.")
+else:
+    print("The graph is not bipartite and cannot be colored with 2 colors.")
